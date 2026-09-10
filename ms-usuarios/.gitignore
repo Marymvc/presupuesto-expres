@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (contienen el JWT_SECRET real)
+.env
+
+# Credenciales de Firebase — NUNCA se suben al repo
+serviceAccountKey.json
+
+# Logs
+npm-debug.log*
+*.log
+
+# Sistema operativo / editor
+.DS_Store
+.vscode/
