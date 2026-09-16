@@ -22,36 +22,30 @@ app.use(limiter);
 // IMPORTANTE: no usar express.json() antes de las rutas con proxy —
 // consumiría el stream del body y el proxy reenviaría una petición vacía.
 
+// Express recorta el "mount path" antes de pasarle la petición al proxy
+// (ej. montado en /api/usuarios/login, req.url llegaría como "/").
+// pathRewrite reconstruye la ruta completa original con req.originalUrl,
+// para que el microservicio reciba la misma ruta que pidió el frontend.
+function proxyHacia(target) {
+  return createProxyMiddleware({
+    target,
+    changeOrigin: true,
+    pathRewrite: (path, req) => req.originalUrl,
+  });
+}
+
 // --- µs-Usuarios ---------------------------------------------------
 // Registro y login son públicos: nadie tiene JWT todavía en ese punto.
-app.use(
-  '/api/usuarios/registro',
-  createProxyMiddleware({ target: process.env.USUARIOS_URL, changeOrigin: true })
-);
-app.use(
-  '/api/usuarios/login',
-  createProxyMiddleware({ target: process.env.USUARIOS_URL, changeOrigin: true })
-);
+app.use('/api/usuarios/registro', proxyHacia(process.env.USUARIOS_URL));
+app.use('/api/usuarios/login', proxyHacia(process.env.USUARIOS_URL));
 // El resto de /api/usuarios (ej. /me) sí requiere JWT válido.
-app.use(
-  '/api/usuarios',
-  verificarToken,
-  createProxyMiddleware({ target: process.env.USUARIOS_URL, changeOrigin: true })
-);
+app.use('/api/usuarios', verificarToken, proxyHacia(process.env.USUARIOS_URL));
 
 // --- µs-Items --------------------------------------------------------
-app.use(
-  '/api/items',
-  verificarToken,
-  createProxyMiddleware({ target: process.env.ITEMS_URL, changeOrigin: true })
-);
+app.use('/api/items', verificarToken, proxyHacia(process.env.ITEMS_URL));
 
 // --- µs-Presupuestos (GraphQL) ---------------------------------------
-app.use(
-  '/graphql',
-  verificarToken,
-  createProxyMiddleware({ target: process.env.PRESUPUESTOS_URL, changeOrigin: true })
-);
+app.use('/graphql', verificarToken, proxyHacia(process.env.PRESUPUESTOS_URL));
 
 app.get('/health', (req, res) => res.json({ status: 'ok', servicio: 'gateway' }));
 

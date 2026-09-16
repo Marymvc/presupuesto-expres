@@ -1,0 +1,127 @@
+name: CI/CD PresupuestoExpress
+
+# Se dispara en cada push a main, y también en cada Pull Request hacia
+# main (para revisar antes de fusionar, sin necesidad de esperar al merge).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1) TESTS — corre los tests de los 4 servicios backend en paralelo
+  # ------------------------------------------------------------------
+  test:
+    name: Tests · ${{ matrix.servicio }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        servicio: [ms-usuarios, ms-items, ms-presupuestos, gateway]
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.servicio }}/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: ${{ matrix.servicio }}
+        run: npm ci
+
+      - name: Correr tests
+        working-directory: ${{ matrix.servicio }}
+        run: npm test
+
+  # ------------------------------------------------------------------
+  # 2) BUILD — valida que cada servicio instale limpio en modo
+  #    producción, y que el frontend no tenga archivos rotos
+  # ------------------------------------------------------------------
+  build:
+    name: Build · ${{ matrix.servicio }}
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        servicio: [ms-usuarios, ms-items, ms-presupuestos, gateway]
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.servicio }}/package-lock.json
+
+      - name: Instalar dependencias (modo producción)
+        working-directory: ${{ matrix.servicio }}
+        run: npm ci --omit=dev
+
+      - name: Verificar sintaxis de todos los archivos .js
+        working-directory: ${{ matrix.servicio }}
+        run: find src -name "*.js" -exec node --check {} \;
+
+  build-frontend:
+    name: Build · frontend
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Verificar que existan las páginas principales
+        run: |
+          test -f frontend/index.html
+          test -f frontend/app.html
+          echo "Frontend OK"
+
+      - name: Preparar artefacto del frontend
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+  # ------------------------------------------------------------------
+  # 3) DEPLOY — solo en push a main (no en Pull Requests), después de
+  #    que test y build hayan pasado. El frontend se despliega de
+  #    verdad a GitHub Pages; el deploy de los 4 backends queda como
+  #    plantilla para completar con tu proveedor real (ver README).
+  # ------------------------------------------------------------------
+  deploy-frontend:
+    name: Deploy · frontend (GitHub Pages)
+    needs: build-frontend
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  deploy-backend:
+    name: Deploy · ${{ matrix.servicio }} (plantilla)
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        servicio: [ms-usuarios, ms-items, ms-presupuestos, gateway]
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Deploy (completar con tu proveedor)
+        run: |
+          echo "Aquí va el deploy real de ${{ matrix.servicio }}."
+          echo "Ej. Render/Railway/Fly.io con su CLI o Deploy Hook + secrets de GitHub."
+          echo "Ver el README de la sección CI/CD para las opciones concretas."

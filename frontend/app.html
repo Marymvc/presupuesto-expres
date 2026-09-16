@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PresupuestoExpress — Panel</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">PresupuestoExpress</div>
+  <div class="usuario-info">
+    <span id="nombreUsuario"></span>
+    <button class="btn-texto" id="btnSalir" type="button" style="color:#fff">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="contenedor">
+  <div class="grid-app">
+
+    <!-- Columna izquierda: catálogo de ítems -->
+    <div>
+      <div class="seccion">
+        <div class="seccion-header">
+          <h2>Catálogo de ítems</h2>
+        </div>
+
+        <form id="formNuevoItem" class="form-item-nuevo">
+          <div class="full campo" style="margin-bottom:0">
+            <label for="itemNombre">Descripción</label>
+            <input type="text" id="itemNombre" placeholder="Ej. Colocado de carpeta" required />
+          </div>
+          <div class="campo" style="margin-bottom:0">
+            <label for="itemCategoria">Partida</label>
+            <input type="text" id="itemCategoria" placeholder="Ej. M01 · Terraza" required />
+          </div>
+          <div class="campo" style="margin-bottom:0">
+            <label for="itemUnidad">Unidad</label>
+            <input type="text" id="itemUnidad" placeholder="M2, GLB, PZA..." required />
+          </div>
+          <div class="full campo" style="margin-bottom:0">
+            <label for="itemCosto">Costo unitario (Bs)</label>
+            <input type="number" id="itemCosto" step="0.01" min="0" required />
+          </div>
+          <button type="submit" class="btn-primario full">Agregar al catálogo</button>
+        </form>
+
+        <div id="listaItems"><div class="vacio">Cargando catálogo…</div></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: armador de presupuesto -->
+    <div>
+      <div class="seccion">
+        <div class="seccion-header">
+          <h2>Nuevo presupuesto</h2>
+        </div>
+
+        <div class="campo">
+          <label for="presupuestoNombre">Nombre del proyecto</label>
+          <input type="text" id="presupuestoNombre" placeholder="Ej. Remodelación Multifamiliar" />
+        </div>
+
+        <div id="filasPresupuesto"><div class="vacio">Agrega ítems del catálogo para armar el presupuesto.</div></div>
+
+        <button type="button" class="btn-secundario" id="btnAgregarFila" style="margin-top:0.6rem">+ Agregar fila</button>
+
+        <div class="total-box">
+          <div class="linea-total">
+            <span>Total</span>
+            <span class="monto" id="totalPreview">Bs 0.00</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primario" id="btnGuardarPresupuesto" style="width:100%; margin-top:1rem">
+          Guardar presupuesto
+        </button>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-header">
+          <h2>Mis presupuestos</h2>
+        </div>
+        <div id="listaPresupuestos"><div class="vacio">Cargando presupuestos…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
