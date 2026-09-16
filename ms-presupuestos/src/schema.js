@@ -2,6 +2,7 @@ const { gql } = require('graphql-tag');
 
 const typeDefs = gql`
   type ItemPresupuesto {
+    itemId: String
     descripcion: String!
     categoria: String!
     unidad: String!
@@ -19,6 +20,7 @@ const typeDefs = gql`
     id: ID!
     usuarioId: String!
     nombre: String!
+    cliente: String
     items: [ItemPresupuesto!]!
     subtotalesPorCategoria: [SubtotalCategoria!]!
     total: Float!
@@ -28,6 +30,7 @@ const typeDefs = gql`
   }
 
   input ItemInput {
+    itemId: String
     descripcion: String!
     categoria: String
     unidad: String!
@@ -44,7 +47,11 @@ const typeDefs = gql`
 
   type Mutation {
     "Crea un presupuesto: calcula subtotal por fila, agrupa por categoría y calcula el total"
-    crearPresupuesto(nombre: String!, items: [ItemInput!]!): Presupuesto!
+    crearPresupuesto(nombre: String!, cliente: String, items: [ItemInput!]!): Presupuesto!
+    "Edita un presupuesto existente: reemplaza sus ítems y recalcula todo (quitar/añadir filas)"
+    actualizarPresupuesto(id: ID!, nombre: String, cliente: String, items: [ItemInput!]!): Presupuesto!
+    "Elimina un presupuesto propio"
+    eliminarPresupuesto(id: ID!): Boolean!
     "Cambia el estado del presupuesto (ej. borrador -> aprobado)"
     actualizarEstado(id: ID!, estado: String!): Presupuesto!
   }

@@ -189,6 +189,7 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1.5rem;
 }
 .topbar .marca { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
 .topbar .usuario-info {
@@ -197,6 +198,28 @@ label {
   gap: 1rem;
   font-size: 0.88rem;
   color: rgba(255,255,255,0.85);
+}
+.nav-app {
+  display: flex;
+  gap: 1.4rem;
+  margin-right: auto;
+  margin-left: 2rem;
+}
+.nav-app a {
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.3rem 0;
+  border-bottom: 2px solid transparent;
+}
+.nav-app a:hover { color: #fff; }
+.nav-app a.activo {
+  color: #fff;
+  border-bottom-color: var(--terracota);
+}
+@media (max-width: 640px) {
+  .nav-app { margin-left: 0.5rem; gap: 0.9rem; }
 }
 
 .contenedor {
@@ -266,7 +289,7 @@ label {
 }
 .fila-presupuesto {
   display: grid;
-  grid-template-columns: 2fr 0.7fr 0.8fr 0.9fr auto;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.9fr auto;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.5rem;
@@ -303,6 +326,19 @@ label {
   padding: 0.9rem 1.1rem;
   margin-bottom: 0.7rem;
 }
+.presupuesto-guardado summary {
+  cursor: pointer;
+  list-style: none;
+}
+.presupuesto-guardado summary::-webkit-details-marker { display: none; }
+.presupuesto-guardado summary::after {
+  content: 'Ver detalle ▾';
+  display: block;
+  font-size: 0.74rem;
+  color: var(--azul-plano);
+  margin-top: 0.4rem;
+}
+.presupuesto-guardado[open] summary::after { content: 'Ocultar detalle ▴'; }
 .presupuesto-guardado .cabecera {
   display: flex;
   justify-content: space-between;
@@ -322,9 +358,199 @@ label {
   color: var(--grafito-suave);
 }
 
+.detalle-presupuesto {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--linea);
+}
+.tabla-detalle {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.tabla-detalle th {
+  text-align: left;
+  font-size: 0.72rem;
+  color: var(--grafito-suave);
+  font-weight: 500;
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--linea);
+}
+.tabla-detalle td {
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--linea);
+}
+.tabla-detalle td.num { text-align: right; }
+.tabla-detalle .fila-categoria td {
+  background: rgba(44, 84, 130, 0.09);
+  font-weight: 600;
+  color: var(--azul-plano);
+  font-size: 0.76rem;
+}
+.tabla-detalle .fila-total td {
+  font-weight: 600;
+  border-top: 2px solid var(--azul-plano);
+  border-bottom: none;
+}
+.detalle-presupuesto .letras {
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--grafito-suave);
+  margin-top: 0.4rem;
+}
+
 .vacio {
   color: var(--grafito-suave);
   font-size: 0.88rem;
   font-style: italic;
   padding: 0.6rem 0;
 }
+
+/* ---- Navbar compartido ------------------------------------------ */
+.topbar-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.nav-links {
+  display: flex;
+  gap: 1.4rem;
+}
+.nav-link {
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 0.86rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+}
+.nav-link:hover { color: #fff; }
+.nav-link.activo {
+  color: #fff;
+  border-bottom-color: var(--terracota);
+}
+@media (max-width: 720px) {
+  .topbar { flex-wrap: wrap; gap: 0.6rem; }
+  .topbar-izquierda { flex-wrap: wrap; gap: 0.8rem; }
+}
+
+/* ---- Footer compartido -------------------------------------------- */
+.site-footer {
+  background: var(--azul-plano);
+  color: rgba(255,255,255,0.85);
+  margin-top: 3rem;
+}
+.footer-contenido {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.2rem 1.6rem 1.4rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 720px) {
+  .footer-contenido { grid-template-columns: 1fr; }
+}
+.footer-marca {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.footer-col p { font-size: 0.82rem; margin: 0.2rem 0; color: rgba(255,255,255,0.7); }
+.footer-titulo {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 0.5rem;
+}
+.footer-redes { display: flex; flex-direction: column; gap: 0.35rem; }
+.footer-redes a {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 0.84rem;
+}
+.footer-redes a:hover { color: #fff; text-decoration: underline; }
+.footer-pie {
+  border-top: 1px solid rgba(255,255,255,0.15);
+  text-align: center;
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.55);
+  padding: 0.9rem 1rem;
+}
+
+/* ---- Página de edición dentro de "Mis presupuestos" --------------- */
+.presupuesto-acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+.presupuesto-acciones button { font-size: 0.82rem; padding: 0.5rem 0.9rem; }
+.btn-peligro {
+  background: transparent;
+  color: var(--rojo-alerta);
+  border: 1px solid var(--rojo-alerta);
+}
+.btn-peligro:hover { background: #fbe9e6; }
+
+/* ---- Página Guía --------------------------------------------------- */
+.guia-hero {
+  background: var(--azul-plano);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: #fff;
+  padding: 3rem 1.6rem;
+  text-align: center;
+}
+.guia-hero h1 { color: #fff; font-size: 1.9rem; }
+.guia-hero p { color: rgba(255,255,255,0.75); max-width: 46ch; margin: 0.6rem auto 0; }
+
+.guia-pasos {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.4rem 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+}
+@media (max-width: 720px) { .guia-pasos { grid-template-columns: 1fr; } }
+.guia-paso {
+  background: var(--papel-carta);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 1.2rem;
+}
+.guia-paso .numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--terracota);
+  color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  margin-bottom: 0.6rem;
+}
+.guia-paso h3 { font-size: 1rem; margin-bottom: 0.3rem; }
+.guia-paso p { font-size: 0.86rem; color: var(--grafito-suave); margin: 0; }
+
+.guia-faq {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0.5rem 1.6rem 3rem;
+}
+.guia-faq h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+.guia-faq details {
+  border-bottom: 1px solid var(--linea);
+  padding: 0.8rem 0;
+}
+.guia-faq summary {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+.guia-faq p { font-size: 0.86rem; color: var(--grafito-suave); margin: 0.5rem 0 0; }

@@ -15,6 +15,7 @@ function requiereAuth(context) {
 // general — igual que en el ejemplo real de presupuesto compartido.
 function calcularPresupuesto(itemsInput) {
   const items = itemsInput.map((item) => ({
+    itemId: item.itemId || null,
     descripcion: item.descripcion,
     categoria: item.categoria || 'Sin categoría',
     unidad: item.unidad,
@@ -61,7 +62,7 @@ const resolvers = {
   },
 
   Mutation: {
-    crearPresupuesto: async (_, { nombre, items }, context) => {
+    crearPresupuesto: async (_, { nombre, cliente, items }, context) => {
       const usuario = requiereAuth(context);
 
       const { items: itemsCalculados, subtotalesPorCategoria, total } = calcularPresupuesto(items);
@@ -69,6 +70,7 @@ const resolvers = {
       const nuevoPresupuesto = {
         usuarioId: usuario.id,
         nombre,
+        cliente: cliente || null,
         items: itemsCalculados,
         subtotalesPorCategoria,
         total,
@@ -79,6 +81,54 @@ const resolvers = {
 
       const docRef = await presupuestosCollection.add(nuevoPresupuesto);
       return { id: docRef.id, ...nuevoPresupuesto };
+    },
+
+    actualizarPresupuesto: async (_, { id, nombre, cliente, items }, context) => {
+      const usuario = requiereAuth(context);
+      const docRef = presupuestosCollection.doc(id);
+      const docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        throw new GraphQLError('Presupuesto no encontrado', { extensions: { code: 'NOT_FOUND' } });
+      }
+      const actual = docSnap.data();
+      if (actual.usuarioId !== usuario.id) {
+        throw new GraphQLError('No puedes editar un presupuesto de otro usuario', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      const { items: itemsCalculados, subtotalesPorCategoria, total } = calcularPresupuesto(items);
+
+      const cambios = {
+        nombre: nombre || actual.nombre,
+        cliente: cliente !== undefined ? cliente : actual.cliente,
+        items: itemsCalculados,
+        subtotalesPorCategoria,
+        total,
+        totalEnLetras: numeroALetras(total),
+      };
+
+      await docRef.update(cambios);
+      return { id, ...actual, ...cambios };
+    },
+
+    eliminarPresupuesto: async (_, { id }, context) => {
+      const usuario = requiereAuth(context);
+      const docRef = presupuestosCollection.doc(id);
+      const docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        throw new GraphQLError('Presupuesto no encontrado', { extensions: { code: 'NOT_FOUND' } });
+      }
+      if (docSnap.data().usuarioId !== usuario.id) {
+        throw new GraphQLError('No puedes eliminar un presupuesto de otro usuario', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      await docRef.delete();
+      return true;
     },
 
     actualizarEstado: async (_, { id, estado }, context) => {
